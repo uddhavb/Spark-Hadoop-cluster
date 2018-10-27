@@ -11,10 +11,10 @@ df_business_Attributes=sc.textFile('yelp_business_attributes.csv')
 df_hours=sc.textFile('yelp_business_hours.csv')
 df_checkin=sc.textFile('yelp_checkin.csv')
 
-print("COllecting Business Data and printing")
+print("Collecting Business Data and printing")
 print(df_business.collect())
 
-print("------------------------------COllecting Business attributes data and printing")
+print("Collecting Business attributes data and printing")
 print(df_business_Attributes.collect())
 
 
