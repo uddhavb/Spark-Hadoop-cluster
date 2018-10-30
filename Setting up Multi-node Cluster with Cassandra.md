@@ -14,27 +14,27 @@ Below given are the mentioned steps to set up Cassandra DB in Multi Node cluster
 
 ## 1. Configure Ubuntu server using mentioned steps:
     a. After Ubuntu OS installation is completed on both the machines, login to both machines as root 
-      ###### local$ ssh root@SERVER_IP_ADDRESS
+       *local$ ssh root@SERVER_IP_ADDRESS*
     b. Create new user called demo # adduser demo you will be asked some additional information starting with account password. 
       For more security, select strong password.
     c. Provide root privileges to newly added user 
-      ######  \# gpasswd -a demo sudo
+       *# gpasswd -a demo sudo*
     d. You can add more security to clusters by implementing following steps, but these steps are note necessary for just 
        setting up and using the server.
           i. Add public key authentication
               1. If you do not have public and private key, then you need to generate one using ssh-keygen
               2. Assuming your username is “local” Output will look like Generating public/private rsa key pair. 
                  Enter file in which to save the key 
-                 ###### (/Users/”local”/.ssh/id_rsa):
+                 */Users/”local”/.ssh/id_rsa:*
               3. Hit enter to accept this file and path
               4. Next, you will be prompted to enter passphrase to secure your key. You may add passphrase or not.
               5. A private key “id_rsa” and public key “id_rsa.pub” will be generated in “.ssh” directory.
               6. You need to copy this public key to server.
                     a. You can use ssh-copy-id command 
-                        ###### local$ ssh-copy-id demo@SERVER_IP_ADDRESS
+                       *local$ ssh-copy-id demo@SERVER_IP_ADDRESS*
                     b. After providing password at prompt, the public key will get added to “.ssh/authorized_keys”
                     c. You can also manually install key
-                    d. ###### Local$ cat ~/.ssh/id_rsa.pub
+                    d. *Local$ cat ~/.ssh/id_rsa.pub*
                     e. You will be displayed with public key contents. Starting with “ssh-rsa”. Copy the entire content.
               7. Then go on the server, 
                  ###### \# su - demo 
