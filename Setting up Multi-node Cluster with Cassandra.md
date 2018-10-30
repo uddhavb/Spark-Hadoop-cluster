@@ -14,11 +14,11 @@ Below given are the mentioned steps to set up Cassandra DB in Multi Node cluster
 
 ## 1. Configure Ubuntu server using mentioned steps:
     a. After Ubuntu OS installation is completed on both the machines, login to both machines as root 
-       **local$ ssh root@SERVER_IP_ADDRESS**
+       ```local$ ssh root@SERVER_IP_ADDRESS```
     b. Create new user called demo # adduser demo you will be asked some additional information starting with account password. 
       For more security, select strong password.
     c. Provide root privileges to newly added user 
-       **# gpasswd -a demo sudo**
+       # gpasswd -a demo sudo
     d. You can add more security to clusters by implementing following steps, but these steps are note necessary for just 
        setting up and using the server.
           i. Add public key authentication
