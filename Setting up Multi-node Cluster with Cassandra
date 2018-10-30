@@ -1,0 +1,44 @@
+# Creating Multi-Node Cluster Database with Cassandra on Ubuntu
+
+Cassandra is an open source distributed database system that is designed for storing and manging large amounts of data across 
+commodity servers. 
+It is designed to have peer-to-peer symmetric nodes instead of master node to make sure there can never be single point of failure.
+
+Our project requires data to be distributed on multiple nodes across different locations. 
+Yelp recommendation system takes distributed data to perform machine learning algorithm to provide customers with their requested queries.
+Few of the advantages of using Cassandra includes high availability and fast write speed. 
+Apart from these two advantages, one of the biggest factor of choosing Cassandra is CQL( Cassandra’s Query Language) 
+which has resemblance to SQL which makes querying quite powerful on CSV data.
+
+Below given are the mentioned steps to set up Cassandra DB in Multi Node cluster.
+
+## Configure Ubuntu server using mentioned steps:
+    a. After Ubuntu OS installation is completed on both the machines, login to both machines as root 
+      ###### local$ ssh root@SERVER_IP_ADDRESS
+    b. Create new user called demo # adduser demo you will be asked some additional information starting with account password. 
+      For more security, select strong password.
+    c. Provide root privileges to newly added user 
+      ######  \# gpasswd -a demo sudo
+    d. You can add more security to clusters by implementing following steps, but these steps are note necessary for just 
+       setting up and using the server.
+          i. Add public key authentication
+              1. If you do not have public and private key, then you need to generate one using ssh-keygen
+              2. Assuming your username is “local” Output will look like Generating public/private rsa key pair. 
+                 Enter file in which to save the key (/Users/”local”/.ssh/id_rsa):
+              3. Hit enter to accept this file and path
+4. Next, you will be prompted to enter passphrase to secure your key. You may add passphrase or not.
+5. A private key “id_rsa” and public key “id_rsa.pub” will be generated in “.ssh” directory.
+6. You need to copy this public key to server.
+a. You can use ssh-copy-id command local$ ssh-copy-id demo@SERVER_IP_ADDRESS
+b. After providing password at prompt, the public key will get added to “.ssh/authorized_keys”
+c. You can also manually install key
+d. Local$ cat ~/.ssh/id_rsa.pub
+e. You will be displayed with public key contents. Starting with “ssh-rsa”. Copy the entire content.
+7. Then go on the server, # su - demo # mkdir .ssh # chmod 700 .ssh # nano .ssh/authorized_keys (exit with Ctrl+x and then Y to save) # chmod 600 .ssh/authorized_keys #exit
+ii. Configure SSH Daemon : Now that we have our new account, we can secure our server a little bit by modifying its SSH daemon configuration to disallow remote SSH access to the root account.
+# nano /etc/ssh/sshd_config
+Modify line -> PermitRootLogin no
+(exit with Ctrl+x and then Y to save)
+iii. Reload SSH # service ssh restart
+iv. Now login using local$ sudo ssh demo@SERVER_IP_ADDRESS
+v. Exit using $exit
