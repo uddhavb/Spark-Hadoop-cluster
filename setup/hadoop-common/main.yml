@@ -1,35 +1,60 @@
 ---
-- hosts: masters,slaves
-  become_user: root
-  become: yes
-  become_method: sudo
+# https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-16-04
+- hosts: all
   vars_prompt:
     - name: hadoop-user
       prompt: "enter hadoop user name"
-  roles:
-    - ./roles/install-mysql
-    - ./roles/install-java8
-    - ./roles/install-maven3
 
   tasks:
-    - name: copy the hibernate file
+    - name: add user
+      shell: "adduser {{ hadoop-user }}"
+      become: yes
+    - name: give user sudo priveleges
+      shell: "usermod -aG sudo {{ hadoop-user }}"
+      become: yes
+    - name: Copy pre-existing ssh key
+    - name: example copying file with owner and permissions
       copy:
-        #src: /home/vagrant/hibernate-template.cfg.xml
-        src: /vagrant_data/env/templates/hibernate-template.cfg.xml
-        dest: /vagrant_data/CoffeeMaker/src/main/resources/hibernate.cfg.xml
-        remote_src: True
-    - name: set the password for mysql server
-      lineinfile:
-        path: /vagrant_data/CoffeeMaker/src/main/resources/hibernate.cfg.xml
-        regexp: 'mysql_password'
-        line: '<property name="hibernate.connection.password">{{mysql_password}}</property>'
-    - name: coffee run
-      shell: cd /vagrant_data/CoffeeMaker && nohup mvn spring-boot:run &
-
-#    - name: adding maven repo
-#      apt_repository: repo='ppa:andrei-pozolotin/maven3'
-
-#    - name: install maven3
-#      apt: name={{item}} state=latest
-#      with_items:
-#        - maven3
+        src: ~/.ssh/id_rsa.pub
+        dest: ~/.ssh/authorized_keys
+        owner: '{{ hadoop-user }}'
+        mode: 600
+    - name: Install latest software patches
+      shell: apt-get update && sudo apt-get -y dist-upgrade
+      become: yes
+    - name: Install Java headless
+      shell: apt-get -y install openjdk-8-jdk-headless
+      become: yes
+    - name: create directory for hadoop
+      file:
+        path: ~/my-hadoop-install
+        state: directory
+        mode: 0777
+    - name: Download hadoop 3.0.1
+      get_url:
+        url: https://archive.apache.org/dist/hadoop/core/hadoop-3.0.1/hadoop-3.0.1.tar.gz
+        dest: ~/my-hadoop-install
+        mode: 0777
+    - name: Download and unarchive hadoop
+      unarchive:
+        src: https://archive.apache.org/dist/hadoop/core/hadoop-3.0.1/hadoop-3.0.1.tar.gz
+        dest: ~/my-hadoop-install
+        remote_src: yes
+    - name: insert/update environment variables
+      blockinfile:
+        path: /etc/network/interfaces
+        become: yes
+        block: |
+          JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+          HDFS_NAMENODE_USER="{{ hadoop-user }}"
+          HDFS_DATANODE_USER="{{ hadoop-user }}"
+          HDFS_SECONDARYNAMENODE_USER="{{ hadoop-user }}"
+          YARN_RESOURCEMANAGER_USER="{{ hadoop-user }}"
+          YARN_NODEMANAGER_USER="{{ hadoop-user }}"
+    - name: create directory for hadoop
+      become: yes
+      file:
+        path: /usr/local/hadoop/hdfs/data
+        state: directory
+        owner: "{{ hadoop-user }}"
+        mode: 0777
