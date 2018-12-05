@@ -1,0 +1,29 @@
+---
+- hosts: nodes
+
+  become_user: root
+  become: yes
+  become_method: sudo
+
+  tasks:
+
+    # install all the packages from the 'packages' variable
+    - name: Install {{ item }}
+      apt: pkg={{ item }} state=present update_cache=yes
+      with_items:
+         - git
+         - nodejs-legacy
+         - npm
+
+    # install forever using npm
+    - name: " install forever using npm"
+      npm: name=forever state=present global=yes
+
+    # cloning the git repo
+    - name: clone the given git repo
+      git: repo=https://github.com/CSC-DevOps/App.git  dest=App clone=yes update=yes accept_hostkey=yes
+
+    #install npm packages in the repo
+    - name: "install npm packages"
+      command: npm install chdir=App/
+      become: yes   

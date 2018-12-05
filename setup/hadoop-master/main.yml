@@ -1,0 +1,33 @@
+---
+- hosts: masters
+  become_user: root
+  become: yes
+  become_method: sudo
+  vars_prompt:
+    - name: hadoop-user
+      prompt: "enter hadoop user name"
+  roles:
+    - ./hadoop-common
+
+  tasks:
+    - name: copy the hibernate file
+      copy:
+        #src: /home/vagrant/hibernate-template.cfg.xml
+        src: /vagrant_data/env/templates/hibernate-template.cfg.xml
+        dest: /vagrant_data/CoffeeMaker/src/main/resources/hibernate.cfg.xml
+        remote_src: True
+    - name: set the password for mysql server
+      lineinfile:
+        path: /vagrant_data/CoffeeMaker/src/main/resources/hibernate.cfg.xml
+        regexp: 'mysql_password'
+        line: '<property name="hibernate.connection.password">{{mysql_password}}</property>'
+    - name: coffee run
+      shell: cd /vagrant_data/CoffeeMaker && nohup mvn spring-boot:run &
+
+#    - name: adding maven repo
+#      apt_repository: repo='ppa:andrei-pozolotin/maven3'
+
+#    - name: install maven3
+#      apt: name={{item}} state=latest
+#      with_items:
+#        - maven3
