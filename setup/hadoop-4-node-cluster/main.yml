@@ -15,4 +15,3 @@
     - role: droplet
       DOTOKEN: "{{ lookup('env','DOTOKEN') }}"
       NODE_NAME: hadoop-worker-03
-    
